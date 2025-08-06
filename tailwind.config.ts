@@ -84,11 +84,65 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'bounce-fun': {
+					'0%, 20%, 50%, 80%, 100%': {
+						transform: 'translateY(0) scale(1)'
+					},
+					'40%': {
+						transform: 'translateY(-10px) scale(1.05)'
+					},
+					'60%': {
+						transform: 'translateY(-5px) scale(1.02)'
+					}
+				},
+				'wiggle': {
+					'0%, 7%': {
+						transform: 'rotateZ(0)'
+					},
+					'15%': {
+						transform: 'rotateZ(-15deg)'
+					},
+					'20%': {
+						transform: 'rotateZ(10deg)'
+					},
+					'25%': {
+						transform: 'rotateZ(-10deg)'
+					},
+					'30%': {
+						transform: 'rotateZ(6deg)'
+					},
+					'35%': {
+						transform: 'rotateZ(-4deg)'
+					},
+					'40%, 100%': {
+						transform: 'rotateZ(0)'
+					}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0px)'
+					},
+					'50%': {
+						transform: 'translateY(-10px)'
+					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						opacity: '0.8'
+					},
+					'50%': {
+						opacity: '1'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'bounce-fun': 'bounce-fun 0.6s ease-in-out infinite',
+				'wiggle': 'wiggle 0.8s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite',
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite'
 			}
 		}
 	},
