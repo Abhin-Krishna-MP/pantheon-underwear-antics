@@ -4,8 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
-import { Plus, Palette } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Underwear } from '@/types/underwear';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 
 interface AddUnderwearFormProps {
   onAdd: (underwear: Omit<Underwear, 'id' | 'washCount' | 'retired' | 'achievements'>) => void;
@@ -19,10 +21,13 @@ const PRESET_COLORS = [
 
 export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     color: '#FF6B6B',
     material: 'cotton' as const,
+    customWashes: 60,
+    accessories: [] as ('sunglasses' | 'hat')[],
     purchaseDate: new Date().toISOString().split('T')[0],
   });
 
@@ -30,16 +35,18 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
-    onAdd(formData);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      color: PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)],
-      material: 'cotton',
-      purchaseDate: new Date().toISOString().split('T')[0],
-    });
-    setIsOpen(false);
+  onAdd(formData);
+  
+  // Reset form
+  setFormData({
+    name: '',
+    color: PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)],
+    material: 'cotton',
+    customWashes: 60,
+    accessories: [],
+    purchaseDate: new Date().toISOString().split('T')[0],
+  });
+  setIsOpen(false);
   };
 
   const generateRandomName = () => {
@@ -145,14 +152,62 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
             onValueChange={(value: any) => setFormData(prev => ({ ...prev, material: value }))}
           >
             <SelectTrigger>
-              <SelectValue />
+              <SelectValue placeholder="Select material" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="cotton">Cotton (60 washes) - Classic comfort</SelectItem>
               <SelectItem value="blend">Blend (80 washes) - Best of both worlds</SelectItem>
               <SelectItem value="synthetic">Synthetic (100 washes) - Maximum durability</SelectItem>
+              <SelectItem value="custom">Custom (you decide!)</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {formData.material === 'custom' && (
+          <div className="space-y-2">
+            <Label htmlFor="customWashes">Expected Lifespan (washes)</Label>
+            <Input
+              id="customWashes"
+              type="number"
+              min={1}
+              value={formData.customWashes}
+              onChange={(e) => setFormData(prev => ({ ...prev, customWashes: Number(e.target.value || 1) }))}
+            />
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label>Accessories</Label>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={formData.accessories.includes('sunglasses')}
+                onCheckedChange={(checked) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    accessories: checked
+                      ? Array.from(new Set([...(prev.accessories || []), 'sunglasses']))
+                      : (prev.accessories || []).filter(a => a !== 'sunglasses')
+                  }))
+                }
+              />
+              Sunglasses 😎
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={formData.accessories.includes('hat')}
+                onCheckedChange={(checked) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    accessories: checked
+                      ? Array.from(new Set([...(prev.accessories || []), 'hat']))
+                      : (prev.accessories || []).filter(a => a !== 'hat')
+                  }))
+                }
+              />
+              Hat 🎩
+            </label>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -166,9 +221,12 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
         </div>
 
         <div className="flex gap-2 pt-4">
+          <Button type="button" variant="secondary" onClick={() => handleCheckStatus()}>
+            Check Status 🔮
+          </Button>
           <Button type="submit" className="flex-1 gradient-primary">
             <Plus className="w-4 h-4 mr-2" />
-            Welcome to the Hall!
+            Welcome to UnderLiv!
           </Button>
           <Button
             type="button"

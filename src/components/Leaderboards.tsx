@@ -11,32 +11,31 @@ interface LeaderboardsProps {
 
 export function Leaderboards({ underwear }: LeaderboardsProps) {
   const activeUnderwear = underwear.filter(u => !u.retired);
-  
-  const mostWashed = [...underwear]
-    .sort((a, b) => b.washCount - a.washCount)
-    .slice(0, 5);
 
-  const longestLifespan = [...activeUnderwear]
-    .map(u => ({
-      ...u,
-      lifespanDays: Math.floor((Date.now() - new Date(u.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
-    }))
-    .sort((a, b) => b.lifespanDays - a.lifespanDays)
-    .slice(0, 5);
+  // Greedy picks (single-pass) for the top one in each category
+  const greedyMostWashed = underwear.reduce<Underwear | null>((best, u) => {
+    if (!best || u.washCount > best.washCount) return u;
+    return best;
+  }, null);
 
-  const leastWashed = [...activeUnderwear]
-    .filter(u => u.washCount > 0)
-    .sort((a, b) => a.washCount - b.washCount)
-    .slice(0, 5);
+  const greedyLongest = activeUnderwear.reduce<{ u: Underwear; days: number } | null>((best, u) => {
+    const days = Math.floor((Date.now() - new Date(u.purchaseDate).getTime()) / (1000 * 60 * 60 * 24));
+    if (!best || days > best.days) return { u, days };
+    return best;
+  }, null);
 
-  const bestRatio = [...activeUnderwear]
-    .map(u => {
-      const maxWashes = MATERIAL_LIFESPANS[u.material];
-      const efficiency = u.washCount / maxWashes;
-      return { ...u, efficiency };
-    })
-    .sort((a, b) => b.efficiency - a.efficiency)
-    .slice(0, 5);
+  const greedyLeastWashed = activeUnderwear.reduce<Underwear | null>((best, u) => {
+    if (u.washCount === 0) return best ?? u;
+    if (!best || (best.washCount === 0) || u.washCount < best.washCount) return u;
+    return best;
+  }, null);
+
+  const greedyBestEfficiency = activeUnderwear.reduce<{ u: Underwear; eff: number } | null>((best, u) => {
+    const max = u.material === 'custom' ? (u.customWashes || 100) : MATERIAL_LIFESPANS[u.material];
+    const eff = max ? u.washCount / max : 0;
+    if (!best || eff > best.eff) return { u, eff };
+    return best;
+  }, null);
 
   const getRankEmoji = (index: number) => {
     if (index === 0) return '🥇';
@@ -93,11 +92,11 @@ export function Leaderboards({ underwear }: LeaderboardsProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold rainbow-text mb-2">
+        <h2 className="text-3xl font-bold mb-2">
           🏆 Leaderboards 🏆
         </h2>
         <p className="text-muted-foreground">
-          Where legends are made and cotton dreams come true!
+          Where legends are made and elastic rises to glory!
         </p>
       </div>
 
@@ -108,6 +107,58 @@ export function Leaderboards({ underwear }: LeaderboardsProps) {
           <TabsTrigger value="least-washed">Least Washed</TabsTrigger>
           <TabsTrigger value="efficiency">Efficiency</TabsTrigger>
         </TabsList>
+
+        {/* Greedy champs */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-4">
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Greedy Pick</p>
+            {greedyMostWashed ? (
+              <div className="mt-2 flex items-center gap-2">
+                <UnderwearAvatar underwear={greedyMostWashed} size="sm" />
+                <span className="font-medium">{greedyMostWashed.name}</span>
+                <Badge variant="secondary">{greedyMostWashed.washCount} washes</Badge>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">—</p>
+            )}
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Greedy Longest</p>
+            {greedyLongest ? (
+              <div className="mt-2 flex items-center gap-2">
+                <UnderwearAvatar underwear={greedyLongest.u} size="sm" />
+                <span className="font-medium">{greedyLongest.u.name}</span>
+                <Badge variant="secondary">{greedyLongest.days} days</Badge>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">—</p>
+            )}
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Greedy Freshie</p>
+            {greedyLeastWashed ? (
+              <div className="mt-2 flex items-center gap-2">
+                <UnderwearAvatar underwear={greedyLeastWashed} size="sm" />
+                <span className="font-medium">{greedyLeastWashed.name}</span>
+                <Badge variant="secondary">{greedyLeastWashed.washCount} washes</Badge>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">—</p>
+            )}
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Greedy Efficient</p>
+            {greedyBestEfficiency ? (
+              <div className="mt-2 flex items-center gap-2">
+                <UnderwearAvatar underwear={greedyBestEfficiency.u} size="sm" />
+                <span className="font-medium">{greedyBestEfficiency.u.name}</span>
+                <Badge variant="secondary">{(greedyBestEfficiency.eff * 100).toFixed(0)}%</Badge>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">—</p>
+            )}
+          </Card>
+        </div>
 
         <TabsContent value="most-washed">
           <LeaderboardCard
@@ -145,7 +196,7 @@ export function Leaderboards({ underwear }: LeaderboardsProps) {
             icon={<TrendingUp className="w-5 h-5 text-purple-500" />}
             items={bestRatio}
             getValue={(item) => `${(item.efficiency * 100).toFixed(1)}%`}
-            getLabel={(item) => `${item.washCount}/${MATERIAL_LIFESPANS[item.material]} washes`}
+            getLabel={(item) => `${item.washCount}/${MATERIAL_LIFESPANS[item.material] || item.customWashes} washes`}
           />
         </TabsContent>
       </Tabs>

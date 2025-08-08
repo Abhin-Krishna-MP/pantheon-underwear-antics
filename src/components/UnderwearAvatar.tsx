@@ -1,4 +1,4 @@
-import { Underwear } from '@/types/underwear';
+import { Underwear, MATERIAL_LIFESPANS } from '@/types/underwear';
 
 interface UnderwearAvatarProps {
   underwear: Underwear;
@@ -6,8 +6,10 @@ interface UnderwearAvatarProps {
 }
 
 const getLifespanPercentage = (underwear: Underwear) => {
-  const maxWashes = underwear.material === 'cotton' ? 60 : 
-                   underwear.material === 'blend' ? 80 : 100;
+  const maxWashes =
+    underwear.material === 'custom'
+      ? Math.max(1, underwear.customWashes || 100)
+      : MATERIAL_LIFESPANS[underwear.material];
   return (underwear.washCount / maxWashes) * 100;
 };
 
@@ -22,9 +24,12 @@ const getAvatarGlow = (underwear: Underwear) => {
 
 const getAccessories = (underwear: Underwear) => {
   const lifespan = getLifespanPercentage(underwear);
-  const accessories = [];
+  const accessories: string[] = [];
   
-  // Add wear indicators based on lifespan
+  // User-selected accessories
+  underwear.accessories?.forEach((a) => accessories.push(a));
+  
+  // Add wear indicators based on lifespan used
   if (lifespan > 25) accessories.push('holes');
   if (lifespan > 50) accessories.push('patches');
   if (lifespan > 75) accessories.push('threads');
@@ -145,6 +150,43 @@ export function UnderwearAvatar({ underwear, size = 'md' }: UnderwearAvatarProps
               {underwear.achievements.length}
             </text>
           </g>
+        )}
+
+        {/* Fun accessories */}
+        {accessories.includes('sunglasses') && !underwear.retired && (
+          <g>
+            <rect x="35" y="45" width="12" height="6" rx="3" fill="#111" />
+            <rect x="53" y="45" width="12" height="6" rx="3" fill="#111" />
+            <rect x="47" y="48" width="6" height="2" fill="#111" />
+          </g>
+        )}
+        {accessories.includes('hat') && (
+          <g>
+            <rect x="32" y="28" width="36" height="8" rx="2" fill="#333" />
+            <rect x="28" y="35" width="44" height="3" rx="1.5" fill="#111" />
+          </g>
+        )}
+
+        {/* Face expression */}
+        {!underwear.retired && (
+          <>
+            {lifespan < 75 ? (
+              <>
+                <circle cx="40" cy="50" r="2" fill="#333" />
+                <circle cx="60" cy="50" r="2" fill="#333" />
+                <path d="M45 60 q5 5 10 0" stroke="#333" strokeWidth="1.5" fill="none" />
+              </>
+            ) : (
+              <>
+                <path d="M38 50 q4 3 8 0" stroke="#333" strokeWidth="1.5" fill="none" />
+                <path d="M54 50 q4 3 8 0" stroke="#333" strokeWidth="1.5" fill="none" />
+                <path d="M45 62 q5 -5 10 0" stroke="#333" strokeWidth="1.5" fill="none" />
+                {lifespan > 85 && (
+                  <path d="M72 48 c2 4 -1 6 -3 6 c-2 0 -4 -2 -2 -5 z" fill="#7dd3fc" opacity="0.7" />
+                )}
+              </>
+            )}
+          </>
         )}
       </svg>
     </div>

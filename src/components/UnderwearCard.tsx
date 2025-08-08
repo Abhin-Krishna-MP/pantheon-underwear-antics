@@ -15,8 +15,9 @@ interface UnderwearCardProps {
 export function UnderwearCard({ underwear, onWash, onRetire }: UnderwearCardProps) {
   const { toast } = useToast();
   
-  const maxWashes = MATERIAL_LIFESPANS[underwear.material];
-  const lifespanPercentage = Math.min((underwear.washCount / maxWashes) * 100, 100);
+  const maxWashes = underwear.material === 'custom'
+    ? Math.max(1, underwear.customWashes || 100)
+    : MATERIAL_LIFESPANS[underwear.material];
   
   const getLifespanColor = () => {
     if (lifespanPercentage < 25) return 'text-green-600';

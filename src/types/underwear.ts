@@ -2,7 +2,9 @@ export interface Underwear {
   id: string;
   name: string;
   color: string;
-  material: 'cotton' | 'blend' | 'synthetic';
+  material: 'cotton' | 'blend' | 'synthetic' | 'custom';
+  customWashes?: number;
+  accessories?: ('sunglasses' | 'hat')[];
   purchaseDate: string;
   washCount: number;
   retired: boolean;
