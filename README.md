@@ -36,6 +36,28 @@ npm i
 npm run dev
 ```
 
+**Backend Setup (Django)**
+
+This project now includes a Django backend for authentication. To set it up:
+
+```sh
+# Step 1: Create and activate virtual environment (if not already done)
+python3 -m venv backend_env
+source backend_env/bin/activate  # On Windows: backend_env\Scripts\activate
+
+# Step 2: Install Django dependencies
+pip install django djangorestframework django-cors-headers
+
+# Step 3: Run migrations
+python manage.py migrate
+
+# Step 4: Start the Django server
+python manage.py runserver 8000
+
+# Or use the provided script
+./start_backend.sh
+```
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
@@ -54,11 +76,18 @@ npm run dev
 
 This project is built with:
 
+### Frontend
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+
+### Backend
+- Django
+- Django REST Framework
+- SQLite (development)
+- Session-based authentication
 
 ## How can I deploy this project?
 

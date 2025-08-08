@@ -6,13 +6,16 @@ import { AddUnderwearForm } from '@/components/AddUnderwearForm';
 import { Leaderboards } from '@/components/Leaderboards';
 import { useUnderwear } from '@/hooks/useUnderwear';
 import { Crown, Plus, Trophy, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useLocalAuth } from '@/hooks/useLocalAuth';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { underwear, addUnderwear, washUnderwear, retireUnderwear } = useUnderwear();
   const [activeTab, setActiveTab] = useState('hall');
-  const { user, logout } = useLocalAuth();
+  const { user, logout } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const quotes = [
     "UnderLiv: Where briefs meet destiny.",
@@ -25,6 +28,23 @@ const Index = () => {
 
   const activeUnderwear = underwear.filter(u => !u.retired);
   const retiredUnderwear = underwear.filter(u => u.retired);
+
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      toast({
+        title: "Logged out",
+        description: "You have been logged out successfully.",
+      });
+    } else {
+      toast({
+        title: "Logout failed",
+        description: result.message,
+        variant: "destructive",
+      });
+    }
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen gradient-hero">
@@ -48,7 +68,7 @@ const Index = () => {
               {!user ? (
                 <Link to="/login" className="story-link text-sm">Login</Link>
               ) : (
-                <button onClick={logout} className="text-xs text-muted-foreground hover-scale">Logout {user.name.split(' ')[0]}</button>
+                <button onClick={handleLogout} className="text-xs text-muted-foreground hover-scale">Logout {user.username}</button>
               )}
             </div>
           </div>

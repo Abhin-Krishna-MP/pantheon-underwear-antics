@@ -3,22 +3,26 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useLocalAuth } from '@/hooks/useLocalAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const funnyOpeners = [
   "Welcome to UnderLiv — where passwords fear the spin cycle.",
   "Log in like a legend. Elastic optional.",
   "No socks were lost during this authentication.",
-  "Your data is stored in... a very fancy drawer (localStorage).",
+  "Your data is stored in... a very fancy drawer (Django).",
   "Enter the Hall. Mind the tumble dryer."
 ];
 
 export default function Login() {
   const nav = useNavigate();
-  const { user, login } = useLocalAuth();
-  const [name, setName] = useState('');
+  const { user, loading, login, register } = useAuth();
+  const { toast } = useToast();
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
   const [idx, setIdx] = useState(0);
 
   const opener = useMemo(() => funnyOpeners[idx % funnyOpeners.length], [idx]);
@@ -29,19 +33,61 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    if (user) nav('/');
-  }, [user, nav]);
+    if (user && !loading) nav('/');
+  }, [user, loading, nav]);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(name, email);
-    nav('/');
+    
+    if (!username.trim() || !password.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isRegistering && !email.trim()) {
+      toast({
+        title: "Error",
+        description: "Email is required for registration",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const result = isRegistering 
+      ? await register(username, email, password)
+      : await login(username, password);
+
+    if (result.success) {
+      toast({
+        title: "Success!",
+        description: result.message,
+      });
+      nav('/');
+    } else {
+      toast({
+        title: "Error",
+        description: result.message,
+        variant: "destructive",
+      });
+    }
   };
 
-  const loginAsGuest = () => {
-    login('Guest of the Laundry Realm');
-    nav('/');
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-3 animate-bounce-fun">
+            <span className="text-3xl">🎪</span>
+          </div>
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-16 gradient-hero">
@@ -56,17 +102,61 @@ export default function Login() {
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Laundry Legend" />
+            <Label htmlFor="username">Username</Label>
+            <Input 
+              id="username" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+              placeholder="Laundry Legend" 
+              required
+            />
           </div>
+          
+          {isRegistering && (
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                placeholder="hero@underliv.lol" 
+                required
+              />
+            </div>
+          )}
+          
           <div className="space-y-2">
-            <Label htmlFor="email">Email (optional)</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hero@underliv.lol" />
+            <Label htmlFor="password">Password</Label>
+            <Input 
+              id="password" 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              placeholder="••••••••" 
+              required
+            />
           </div>
 
-          <Button type="submit" className="w-full gradient-primary">Log Me In</Button>
-          <Button type="button" variant="secondary" onClick={loginAsGuest} className="w-full">Login as Guest 🫧</Button>
-          <p className="text-xs text-muted-foreground text-center">Super not secure. This is for demo giggles only.</p>
+          <Button type="submit" className="w-full gradient-primary">
+            {isRegistering ? 'Register' : 'Log Me In'}
+          </Button>
+          
+          <Button 
+            type="button" 
+            variant="secondary" 
+            onClick={() => setIsRegistering(!isRegistering)} 
+            className="w-full"
+          >
+            {isRegistering ? 'Already have an account? Login' : 'Need an account? Register'}
+          </Button>
+          
+          <p className="text-xs text-muted-foreground text-center">
+            {isRegistering 
+              ? "Join the UnderLiv community!" 
+              : "Super secure Django authentication. No more lost socks!"
+            }
+          </p>
         </form>
       </Card>
     </div>
