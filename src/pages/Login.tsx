@@ -48,7 +48,7 @@ export default function Login() {
       <Card className="w-full max-w-md p-8 shadow-fun animate-fade-in">
         <div className="text-center mb-6">
           <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-3 animate-bounce-fun">
-            <span className="text-3xl">🩲</span>
+            <span className="text-3xl">🎪</span>
           </div>
           <h1 className="text-2xl font-bold">UnderLiv Login</h1>
           <p className="text-sm text-muted-foreground mt-1">{opener}</p>
