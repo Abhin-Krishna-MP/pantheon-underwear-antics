@@ -6,7 +6,7 @@ export interface User {
   email?: string;
 }
 
-const API_BASE_URL = 'http://localhost:8000/api';
+import { API_BASE_URL } from '@/config/api';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);

@@ -91,7 +91,19 @@ This project is built with:
 
 ## How can I deploy this project?
 
+### Option 1: Lovable Deployment
 Simply open [Lovable](https://lovable.dev/projects/26c23208-de2d-4481-ba7e-b92f077e868a) and click on Share -> Publish.
+
+### Option 2: Manual Deployment to Render
+For full control over your deployment, follow the detailed guide in [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+Quick steps:
+1. **Backend**: Deploy Django API as a Web Service on Render
+2. **Frontend**: Deploy React app as a Static Site on Render
+3. **Database**: Set up PostgreSQL database on Render
+4. **Environment**: Configure environment variables
+
+See [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) for a quick checklist.
 
 ## Can I connect a custom domain to my Lovable project?
 
