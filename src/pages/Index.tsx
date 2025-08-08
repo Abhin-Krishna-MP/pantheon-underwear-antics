@@ -6,10 +6,13 @@ import { AddUnderwearForm } from '@/components/AddUnderwearForm';
 import { Leaderboards } from '@/components/Leaderboards';
 import { useUnderwear } from '@/hooks/useUnderwear';
 import { Crown, Plus, Trophy, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useLocalAuth } from '@/hooks/useLocalAuth';
 
 const Index = () => {
   const { underwear, addUnderwear, washUnderwear, retireUnderwear } = useUnderwear();
   const [activeTab, setActiveTab] = useState('hall');
+  const { user, logout } = useLocalAuth();
 
   const quotes = [
     "UnderLiv: Where briefs meet destiny.",
@@ -39,9 +42,14 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="text-right">
+            <div className="text-right space-y-1">
               <div className="text-sm text-muted-foreground">Total Inductees</div>
               <div className="text-2xl font-bold text-primary">{underwear.length}</div>
+              {!user ? (
+                <Link to="/login" className="story-link text-sm">Login</Link>
+              ) : (
+                <button onClick={logout} className="text-xs text-muted-foreground hover-scale">Logout {user.name.split(' ')[0]}</button>
+              )}
             </div>
           </div>
         </div>
