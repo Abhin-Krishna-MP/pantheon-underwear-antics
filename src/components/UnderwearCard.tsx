@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UnderwearAvatar } from './UnderwearAvatar';
 import { Underwear, MATERIAL_LIFESPANS } from '@/types/underwear';
-import { Sparkles, Trash2, Award } from 'lucide-react';
+import { Sparkles, Trash2, Award, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface UnderwearCardProps {
@@ -33,6 +33,31 @@ export function UnderwearCard({ underwear, onWash, onRetire }: UnderwearCardProp
     if (lifespanPercentage < 75) return 'Showing character';
     if (lifespanPercentage < 95) return 'Veteran status';
     return 'Living on borrowed time!';
+  };
+
+  const handleCheckStatus = () => {
+    const daysSincePurchase = Math.floor(
+      (Date.now() - new Date(underwear.purchaseDate).getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    const vibes = [
+      'Hero-in-training 🦸‍♂️',
+      'Washer of destiny 🧼',
+      'Elastic enthusiasm 🎪',
+      'Laundry legend potential 🌟',
+      'Mildly scared of spin cycle 😰',
+      'Fabric warrior in the making ⚔️',
+      'Comfort crusader 🛡️',
+      'Durability detective 🔍'
+    ];
+
+    const accessoriesText = (underwear.accessories && underwear.accessories.length > 0)
+      ? `rocking ${underwear.accessories.join(' & ')}`
+      : 'naturally fabulous';
+
+    const status = `Name: ${underwear.name} • Material: ${underwear.material} (${maxWashes} washes) • Age: ${daysSincePurchase} days old • Current washes: ${underwear.washCount}/${maxWashes} • This pair is ${accessoriesText}. Prognosis: ${vibes[Math.floor(Math.random()*vibes.length)]}. Rough life expectancy: about ${Math.round(maxWashes * 0.8)} heroic washes (give or take a sock).`;
+
+    toast({ title: 'UnderLiv Prognosis 🔮', description: status });
   };
 
   const handleWash = () => {
@@ -155,6 +180,19 @@ export function UnderwearCard({ underwear, onWash, onRetire }: UnderwearCardProp
             Retired on {new Date(underwear.retiredDate!).toLocaleDateString()}
           </Badge>
         )}
+      </div>
+
+      {/* Check Status Button */}
+      <div className="mt-3">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleCheckStatus}
+          className="w-full"
+        >
+          <Zap className="w-4 h-4 mr-2" />
+          Check Status 🔮
+        </Button>
       </div>
     </Card>
   );
