@@ -205,6 +205,7 @@ const Index = () => {
               </div>
             </div>
           </TabsContent>
+        </Tabs>
       </main>
 
       {/* Footer */}

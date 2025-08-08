@@ -22,12 +22,12 @@ const PRESET_COLORS = [
 export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<Underwear, 'id' | 'washCount' | 'retired' | 'achievements'>>({
     name: '',
     color: '#FF6B6B',
-    material: 'cotton' as const,
+    material: 'cotton',
     customWashes: 60,
-    accessories: [] as ('sunglasses' | 'hat')[],
+    accessories: [],
     purchaseDate: new Date().toISOString().split('T')[0],
   });
 
@@ -47,6 +47,28 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
     purchaseDate: new Date().toISOString().split('T')[0],
   });
   setIsOpen(false);
+  };
+
+  const handleCheckStatus = () => {
+    const max = formData.material === 'custom'
+      ? Math.max(1, formData.customWashes || 100)
+      : formData.material === 'cotton' ? 60 : formData.material === 'blend' ? 80 : 100;
+
+    const vibes = [
+      'Hero-in-training',
+      'Washer of destiny',
+      'Elastic enthusiasm',
+      'Laundry legend potential',
+      'Mildly scared of spin cycle'
+    ];
+
+    const accessoriesText = (formData.accessories && formData.accessories.length > 0)
+      ? `rocking ${formData.accessories.join(' & ')}`
+      : 'naturally fabulous';
+
+    const msg = `Name: ${formData.name || 'Nameless Wonder'} • Material plan: ${formData.material} (${max} washes). This pair is ${accessoriesText}. Prognosis: ${vibes[Math.floor(Math.random()*vibes.length)]}. Rough life expectancy: about ${Math.round(max * 0.8)} heroic washes (give or take a sock).`;
+
+    toast({ title: 'UnderLiv Prognosis', description: msg });
   };
 
   const generateRandomName = () => {
@@ -221,7 +243,7 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
         </div>
 
         <div className="flex gap-2 pt-4">
-          <Button type="button" variant="secondary" onClick={() => handleCheckStatus()}>
+          <Button type="button" variant="secondary" onClick={handleCheckStatus}>
             Check Status 🔮
           </Button>
           <Button type="submit" className="flex-1 gradient-primary">

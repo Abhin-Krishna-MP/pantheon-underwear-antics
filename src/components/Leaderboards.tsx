@@ -37,13 +37,38 @@ export function Leaderboards({ underwear }: LeaderboardsProps) {
     return best;
   }, null);
 
+  const mostWashed = [...underwear]
+    .sort((a, b) => b.washCount - a.washCount)
+    .slice(0, 5);
+
+  const longestLifespan = [...activeUnderwear]
+    .map(u => ({
+      ...u,
+      lifespanDays: Math.floor((Date.now() - new Date(u.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
+    }))
+    .sort((a, b) => b.lifespanDays - a.lifespanDays)
+    .slice(0, 5);
+
+  const leastWashed = [...activeUnderwear]
+    .filter(u => u.washCount > 0)
+    .sort((a, b) => a.washCount - b.washCount)
+    .slice(0, 5);
+
+  const bestRatio = [...activeUnderwear]
+    .map(u => {
+      const maxWashes = u.material === 'custom' ? (u.customWashes || 100) : MATERIAL_LIFESPANS[u.material];
+      const efficiency = u.washCount / maxWashes;
+      return { ...u, efficiency };
+    })
+    .sort((a, b) => b.efficiency - a.efficiency)
+    .slice(0, 5);
+
   const getRankEmoji = (index: number) => {
     if (index === 0) return '🥇';
     if (index === 1) return '🥈';
     if (index === 2) return '🥉';
     return '🏅';
   };
-
   const LeaderboardCard = ({ 
     title, 
     icon, 
