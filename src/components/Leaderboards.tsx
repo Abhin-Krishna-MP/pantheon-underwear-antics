@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UnderwearAvatar } from './UnderwearAvatar';
 import { Underwear, MATERIAL_LIFESPANS } from '@/types/underwear';
 import { Trophy, Award, Timer, TrendingUp } from 'lucide-react';
+import { useMemo } from 'react';
 
 interface LeaderboardsProps {
   underwear: Underwear[];
@@ -37,31 +38,35 @@ export function Leaderboards({ underwear }: LeaderboardsProps) {
     return best;
   }, null);
 
-  const mostWashed = [...underwear]
-    .sort((a, b) => b.washCount - a.washCount)
-    .slice(0, 5);
+  const { mostWashed, longestLifespan, leastWashed, bestRatio } = useMemo(() => {
+    const mostWashed = [...underwear]
+      .sort((a, b) => b.washCount - a.washCount)
+      .slice(0, 5);
 
-  const longestLifespan = [...activeUnderwear]
-    .map(u => ({
-      ...u,
-      lifespanDays: Math.floor((Date.now() - new Date(u.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
-    }))
-    .sort((a, b) => b.lifespanDays - a.lifespanDays)
-    .slice(0, 5);
+    const longestLifespan = [...activeUnderwear]
+      .map(u => ({
+        ...u,
+        lifespanDays: Math.floor((Date.now() - new Date(u.purchaseDate).getTime()) / (1000 * 60 * 60 * 24))
+      }))
+      .sort((a, b) => b.lifespanDays - a.lifespanDays)
+      .slice(0, 5);
 
-  const leastWashed = [...activeUnderwear]
-    .filter(u => u.washCount > 0)
-    .sort((a, b) => a.washCount - b.washCount)
-    .slice(0, 5);
+    const leastWashed = [...activeUnderwear]
+      .filter(u => u.washCount > 0)
+      .sort((a, b) => a.washCount - b.washCount)
+      .slice(0, 5);
 
-  const bestRatio = [...activeUnderwear]
-    .map(u => {
-      const maxWashes = u.material === 'custom' ? (u.customWashes || 100) : MATERIAL_LIFESPANS[u.material];
-      const efficiency = u.washCount / maxWashes;
-      return { ...u, efficiency };
-    })
-    .sort((a, b) => b.efficiency - a.efficiency)
-    .slice(0, 5);
+    const bestRatio = [...activeUnderwear]
+      .map(u => {
+        const maxWashes = u.material === 'custom' ? (u.customWashes || 100) : MATERIAL_LIFESPANS[u.material];
+        const efficiency = u.washCount / maxWashes;
+        return { ...u, efficiency };
+      })
+      .sort((a, b) => b.efficiency - a.efficiency)
+      .slice(0, 5);
+
+    return { mostWashed, longestLifespan, leastWashed, bestRatio };
+  }, [underwear]);
 
   const getRankEmoji = (index: number) => {
     if (index === 0) return '🥇';
