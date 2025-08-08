@@ -41,7 +41,7 @@ export function UnderwearCard({ underwear, onWash, onRetire }: UnderwearCardProp
     onWash(underwear.id);
     
     const funnyMessages = [
-      '🧼 Squeaky clean! Your underwear feels refreshed!',
+      '🧼 Squeaky clean! Your undergarment feels refreshed!',
       '✨ Fresh and fabulous! Ready for another adventure!',
       '🫧 Bubble power activated! Cleanliness level: Legendary!',
       '🌟 Sparkling like a diamond in the... laundry basket!',

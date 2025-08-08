@@ -5,12 +5,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
-import { Underwear } from '@/types/underwear';
+import { UnderLiv } from '@/types/underwear';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 
-interface AddUnderwearFormProps {
-  onAdd: (underwear: Omit<Underwear, 'id' | 'washCount' | 'retired' | 'achievements'>) => void;
+interface AddUnderLivFormProps {
+  onAdd: (underliv: Omit<UnderLiv, 'id' | 'washCount' | 'retired' | 'achievements'>) => void;
 }
 
 const PRESET_COLORS = [
@@ -19,10 +19,10 @@ const PRESET_COLORS = [
   '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471'
 ];
 
-export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
+export function AddUnderLivForm({ onAdd }: AddUnderLivFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
-  const [formData, setFormData] = useState<Omit<Underwear, 'id' | 'washCount' | 'retired' | 'achievements'>>({
+  const [formData, setFormData] = useState<Omit<UnderLiv, 'id' | 'washCount' | 'retired' | 'achievements'>>({
     name: '',
     color: '#FF6B6B',
     material: 'cotton',
@@ -35,18 +35,18 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
-  onAdd(formData);
-  
-  // Reset form
-  setFormData({
-    name: '',
-    color: PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)],
-    material: 'cotton',
-    customWashes: 60,
-    accessories: [],
-    purchaseDate: new Date().toISOString().split('T')[0],
-  });
-  setIsOpen(false);
+    onAdd(formData);
+    
+    // Reset form
+    setFormData({
+      name: '',
+      color: PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)],
+      material: 'cotton',
+      customWashes: 60,
+      accessories: [],
+      purchaseDate: new Date().toISOString().split('T')[0],
+    });
+    setIsOpen(false);
   };
 
   const handleCheckStatus = () => {
@@ -98,7 +98,7 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-bounce-fun">
             <Plus className="w-8 h-8 text-primary" />
           </div>
-          <h3 className="font-bold text-lg mb-2">Add New Undergarment</h3>
+          <h3 className="font-bold text-lg mb-2">Add New UnderLiv</h3>
           <p className="text-sm text-muted-foreground">
             Induct a new member into the Hall of Fame!
           </p>
@@ -111,7 +111,7 @@ export function AddUnderwearForm({ onAdd }: AddUnderwearFormProps) {
     <Card className="gradient-card p-6 shadow-fun">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-lg">New Undergarment Recruit</h3>
+          <h3 className="font-bold text-lg">New UnderLiv Recruit</h3>
           <Button
             type="button"
             variant="ghost"

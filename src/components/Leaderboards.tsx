@@ -96,7 +96,7 @@ export function Leaderboards({ underwear }: LeaderboardsProps) {
       <div className="space-y-3">
         {items.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">
-            No contestants yet! Add some underwear to see the competition heat up! 🔥
+            No contestants yet! Add some undergarment to see the competition heat up! 🔥
           </p>
         ) : (
           items.map((item, index) => (

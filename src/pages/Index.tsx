@@ -82,15 +82,15 @@ const Index = () => {
                 <div className="w-24 h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-fun shadow-glow">
                   <Crown className="w-12 h-12 text-primary-foreground" />
                 </div>
-                <h2 className="text-3xl font-bold mb-4">Welcome to the Pantheon!</h2>
+                <h2 className="text-3xl font-bold mb-4">Welcome to UnderLiv!</h2>
                 <p className="text-lg text-muted-foreground mb-6 max-w-md mx-auto">
-                  Your underwear drawer awaits its first legendary inductee. 
-                  Add your first pair and begin the epic journey! 🩲✨
+                  Your undergarment drawer awaits its first legendary inductee. 
+                  Add your first pair and begin the epic journey!
                 </p>
               </div>
             )}
 
-            {/* Underwear Grid */}
+            {/* Undergarment Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AddUnderwearForm onAdd={addUnderwear} />
               
@@ -158,7 +158,7 @@ const Index = () => {
             {retiredUnderwear.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-lg text-muted-foreground">
-                  No retired heroes yet. Your underwear must be made of steel! 💪
+                  No retired heroes yet. Your undergarment must be made of steel! 💪
                 </p>
               </div>
             ) : (
@@ -178,7 +178,7 @@ const Index = () => {
           <TabsContent value="profile" className="space-y-6">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-2">Your UnderLiv Profile</h2>
-              <p className="text-muted-foreground">Badges and achievements across all your underwear.</p>
+              <p className="text-muted-foreground">Badges and achievements across all your undergarment.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -220,7 +220,7 @@ const Index = () => {
       <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-6 mt-12">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
-            Made with 💜 for all the underwear that deserves recognition.
+            Made with 💜 for all the undergarment that deserves recognition.
             <br />
             Remember: every pair has a story, and every wash counts! 🧼✨
           </p>
