@@ -105,6 +105,14 @@ def undergarment_delete(request, pk):
     except Undergarment.DoesNotExist:
         return Response({'error': 'Undergarment not found'}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def leaderboard(request):
+    """Get all undergarments from all users for leaderboard"""
+    undergarments = Undergarment.objects.select_related('user').prefetch_related('achievements').all()
+    serializer = UndergarmentSerializer(undergarments, many=True)
+    return Response(serializer.data)
+
 def check_achievements(undergarment):
     """Check and create achievements based on wash count"""
     wash_count = undergarment.wash_count

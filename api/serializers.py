@@ -52,15 +52,16 @@ class UndergarmentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='pk', read_only=True)  # Use pk as id to match localStorage
     purchase_date = serializers.DateField()
     retired_date = serializers.DateTimeField(allow_null=True)
+    user = UserSerializer(read_only=True)  # Include user info for leaderboard
     
     class Meta:
         model = Undergarment
         fields = [
             'id', 'name', 'color', 'material', 'custom_washes', 
             'accessories', 'purchase_date', 'wash_count', 'retired', 
-            'retired_date', 'achievements'
+            'retired_date', 'achievements', 'user'
         ]
-        read_only_fields = ['id', 'achievements']
+        read_only_fields = ['id', 'achievements', 'user']
 
 class UndergarmentCreateSerializer(serializers.ModelSerializer):
     class Meta:

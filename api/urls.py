@@ -11,6 +11,7 @@ urlpatterns = [
     # Undergarment endpoints
     path('undergarments/', views.undergarment_list, name='undergarment_list'),
     path('undergarments/create/', views.undergarment_create, name='undergarment_create'),
-    path('undergarments/<int:pk>/update/', views.undergarment_update, name='undergarment_update'),
-    path('undergarments/<int:pk>/delete/', views.undergarment_delete, name='undergarment_delete'),
+                    path('undergarments/<int:pk>/update/', views.undergarment_update, name='undergarment_update'),
+                path('undergarments/<int:pk>/delete/', views.undergarment_delete, name='undergarment_delete'),
+                path('leaderboard/', views.leaderboard, name='leaderboard'),
 ] 

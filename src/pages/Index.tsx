@@ -189,7 +189,7 @@ const Index = () => {
                 </TabsContent>
 
                 <TabsContent value="leaderboards">
-                  <Leaderboards underwear={underwear} />
+                  <Leaderboards />
                 </TabsContent>
 
                 <TabsContent value="retired" className="space-y-6">
