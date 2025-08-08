@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User
+from .models import User, Undergarment, Achievement
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        fields = ['id', 'username', 'email']
+        read_only_fields = ['id']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -39,4 +39,33 @@ class LoginSerializer(serializers.Serializer):
             else:
                 raise serializers.ValidationError('Invalid credentials')
         else:
-            raise serializers.ValidationError('Must include username and password') 
+            raise serializers.ValidationError('Must include username and password')
+
+class AchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achievement
+        fields = ['id', 'name', 'description', 'icon', 'type', 'unlocked_at']
+        read_only_fields = ['id', 'unlocked_at']
+
+class UndergarmentSerializer(serializers.ModelSerializer):
+    achievements = AchievementSerializer(many=True, read_only=True)
+    id = serializers.CharField(source='pk', read_only=True)  # Use pk as id to match localStorage
+    purchase_date = serializers.DateField()
+    retired_date = serializers.DateTimeField(allow_null=True)
+    
+    class Meta:
+        model = Undergarment
+        fields = [
+            'id', 'name', 'color', 'material', 'custom_washes', 
+            'accessories', 'purchase_date', 'wash_count', 'retired', 
+            'retired_date', 'achievements'
+        ]
+        read_only_fields = ['id', 'achievements']
+
+class UndergarmentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Undergarment
+        fields = [
+            'name', 'color', 'material', 'custom_washes', 
+            'accessories', 'purchase_date'
+        ] 

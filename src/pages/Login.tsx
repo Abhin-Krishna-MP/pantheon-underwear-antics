@@ -36,8 +36,15 @@ export default function Login() {
     if (user && !loading) nav('/');
   }, [user, loading, nav]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) {
+      console.log('Form submission already in progress, ignoring');
+      return;
+    }
     
     if (!username.trim() || !password.trim()) {
       toast({
@@ -57,22 +64,36 @@ export default function Login() {
       return;
     }
 
-    const result = isRegistering 
-      ? await register(username, email, password)
-      : await login(username, password);
+    setIsSubmitting(true);
+    console.log('Submitting form with:', { username, isRegistering });
 
-    if (result.success) {
-      toast({
-        title: "Success!",
-        description: result.message,
-      });
-      nav('/');
-    } else {
+    try {
+      const result = isRegistering 
+        ? await register(username, email, password)
+        : await login(username, password);
+
+      if (result.success) {
+        toast({
+          title: "Success!",
+          description: result.message,
+        });
+        nav('/');
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
       toast({
         title: "Error",
-        description: result.message,
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -138,8 +159,8 @@ export default function Login() {
             />
           </div>
 
-          <Button type="submit" className="w-full gradient-primary">
-            {isRegistering ? 'Register' : 'Log Me In'}
+          <Button type="submit" className="w-full gradient-primary" disabled={isSubmitting}>
+            {isSubmitting ? 'Loading...' : (isRegistering ? 'Register' : 'Log Me In')}
           </Button>
           
           <Button 

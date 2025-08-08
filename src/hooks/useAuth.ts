@@ -4,7 +4,6 @@ export interface User {
   id: number;
   username: string;
   email?: string;
-  created_at: string;
 }
 
 const API_BASE_URL = 'http://localhost:8000/api';
@@ -39,6 +38,8 @@ export function useAuth() {
 
   const login = async (username: string, password: string) => {
     try {
+      console.log('Attempting login with:', { username, password: password ? '[REDACTED]' : '[EMPTY]' });
+      
       const response = await fetch(`${API_BASE_URL}/auth/login/`, {
         method: 'POST',
         headers: {
@@ -48,12 +49,15 @@ export function useAuth() {
         body: JSON.stringify({ username, password }),
       });
 
+      console.log('Login response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
         return { success: true, message: data.message };
       } else {
         const errorData = await response.json();
+        console.log('Login error data:', errorData);
         return { success: false, message: errorData.message || 'Login failed' };
       }
     } catch (error) {
