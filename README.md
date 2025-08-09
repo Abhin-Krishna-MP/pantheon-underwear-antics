@@ -52,50 +52,31 @@ npm install
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+<img width="500" height="300" alt="frame (3)" src="https://drive.google.com/file/d/1YUDIQiJJpk30Zzd8W802OEGRcUfiDOPz/view?usp=drive_link" />
+*Login for the epic journey of every undergarment.*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+<img width="500" height="300" alt="frame (3)" src="https://drive.google.com/file/d/1vbqliSSKmRBKUZ9Y5HrO6V-IyyNqww4Y/view?usp=drive_link" />
+*Homepage showing the glorious Hall of Famous Undergarments with animated avatars.*
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+
+<img width="500" height="300" alt="frame (3)" src="https://drive.google.com/file/d/13mZAHZHdTMDvK43uZOD4wOvdeyc9JLgs/view?usp=drive_link" />
+*Leaderboard displaying top washed and longest-serving undergarments.*
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+Workflow: User registers underwear → logs washes  → leaderboard + lifespan updates.
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
 
 ### Project Demo
 # Video
 [Add your demo video link here]
-*Explain what the video demonstrates*
+*Shows app navigation, adding undergarments, washing counter updates, and leaderboard.*
 
 # Additional Demos
 [Add any extra demo materials/links]
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- [Abhinav kp]: [Technical]
+- [Abhin Krishna MP]: [Technical]
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
