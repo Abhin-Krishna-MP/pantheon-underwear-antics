@@ -11,9 +11,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
-  const { underwear, addUndergarment, washUndergarment, retireUndergarment, loading } = useUndergarmentsBackend();
+  const { undergarments, addUndergarment, washUndergarment, retireUndergarment, loading } = useUndergarmentsBackend();
   const [activeTab, setActiveTab] = useState('hall');
-  const { user, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -26,24 +26,14 @@ const Index = () => {
   ];
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
 
-  const activeUnderwear = underwear.filter(u => !u.retired);
-  const retiredUnderwear = underwear.filter(u => u.retired);
+  const activeUnderwear = undergarments.filter(u => !u.retired);
+  const retiredUnderwear = undergarments.filter(u => u.retired);
 
   const handleLogout = async () => {
-    const result = await logout();
-    if (result.success) {
-      toast({
-        title: "Logged out",
-        description: "You have been logged out successfully.",
-      });
-    } else {
-      toast({
-        title: "Logout failed",
-        description: result.message,
-        variant: "destructive",
-      });
+    const success = await logout();
+    if (success) {
+      navigate('/login');
     }
-    navigate('/login');
   };
 
   return (
@@ -64,8 +54,8 @@ const Index = () => {
             
             <div className="text-right space-y-1">
               <div className="text-sm text-muted-foreground">Total Inductees</div>
-              <div className="text-2xl font-bold text-primary">{underwear.length}</div>
-              {!user ? (
+              <div className="text-2xl font-bold text-primary">{undergarments.length}</div>
+              {!isAuthenticated ? (
                 <Link to="/login" className="story-link text-sm">Login</Link>
               ) : (
                 <button onClick={handleLogout} className="text-xs text-muted-foreground hover-scale">
@@ -79,7 +69,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {!user ? (
+        {!isAuthenticated ? (
           <div className="text-center py-12">
             <div className="w-24 h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-fun shadow-glow">
               <Crown className="w-12 h-12 text-primary-foreground" />
@@ -124,7 +114,7 @@ const Index = () => {
                 {/* Hall of Fame Tab */}
                 <TabsContent value="hall" className="space-y-6">
                   {/* Welcome Message */}
-                  {underwear.length === 0 && (
+                  {undergarments.length === 0 && (
                     <div className="text-center py-12">
                       <div className="w-24 h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-fun shadow-glow">
                         <Crown className="w-12 h-12 text-primary-foreground" />
@@ -152,28 +142,28 @@ const Index = () => {
                   </div>
 
                   {/* Quick Stats */}
-                  {underwear.length > 0 && (
+                  {undergarments.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                       <div className="gradient-card p-4 rounded-xl text-center shadow-fun">
                         <div className="text-2xl font-bold text-primary">
-                          {underwear.reduce((sum, u) => sum + u.washCount, 0)}
+                          {undergarments.reduce((sum, u) => sum + u.washCount, 0)}
                         </div>
                         <div className="text-sm text-muted-foreground">Total Washes</div>
                       </div>
                       
                       <div className="gradient-card p-4 rounded-xl text-center shadow-fun">
                         <div className="text-2xl font-bold text-secondary">
-                          {underwear.reduce((sum, u) => sum + u.achievements.length, 0)}
+                          {undergarments.reduce((sum, u) => sum + u.achievements.length, 0)}
                         </div>
-                        <div className="text-sm text-muted-foreground">Achievements</div>
+                        <div className="text-muted-foreground">Achievements</div>
                       </div>
 
                       <div className="gradient-card p-4 rounded-xl text-center shadow-fun">
                         <div className="text-2xl font-bold text-accent">
-                          {Math.round(underwear.reduce((sum, u) => {
+                          {Math.round(undergarments.reduce((sum, u) => {
                             const days = Math.floor((Date.now() - new Date(u.purchaseDate).getTime()) / (1000 * 60 * 60 * 24));
                             return sum + days;
-                          }, 0) / underwear.length) || 0}
+                          }, 0) / undergarments.length) || 0}
                         </div>
                         <div className="text-sm text-muted-foreground">Avg Age (days)</div>
                       </div>
@@ -232,7 +222,7 @@ const Index = () => {
                     <div className="gradient-card p-6 rounded-xl shadow-fun">
                       <h3 className="font-bold mb-3">Badges</h3>
                       <div className="flex flex-wrap gap-2">
-                        {[...new Set(underwear.flatMap(u => u.achievements.map(a => a.type)))].map((type) => (
+                        {[...new Set(undergarments.flatMap(u => u.achievements.map(a => a.type)))].map((type) => (
                           <span key={String(type)} className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm">
                             {String(type).toUpperCase()}
                           </span>
@@ -242,11 +232,11 @@ const Index = () => {
 
                     <div className="gradient-card p-6 rounded-xl shadow-fun">
                       <h3 className="font-bold mb-3">Achievements</h3>
-                      {underwear.flatMap(u => u.achievements).length === 0 ? (
+                      {undergarments.flatMap(u => u.achievements).length === 0 ? (
                         <p className="text-muted-foreground">No achievements yet. Wash your way to glory!</p>
                       ) : (
                         <ul className="space-y-2">
-                          {underwear.flatMap(u => u.achievements).map((a) => (
+                          {undergarments.flatMap(u => u.achievements).map((a) => (
                             <li key={`${a.id}-${a.unlockedAt}`} className="flex items-center gap-2">
                               <span className="text-xl">{a.icon}</span>
                               <div>

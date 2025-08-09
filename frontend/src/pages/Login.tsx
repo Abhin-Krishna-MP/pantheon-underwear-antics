@@ -17,7 +17,7 @@ const funnyOpeners = [
 
 export default function Login() {
   const nav = useNavigate();
-  const { user, loading, login, register } = useAuth();
+  const { user, isAuthenticated, isLoading, login, register } = useAuth();
   const { toast } = useToast();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -33,8 +33,8 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    if (user && !loading) nav('/');
-  }, [user, loading, nav]);
+    if (isAuthenticated && !isLoading) nav('/');
+  }, [isAuthenticated, isLoading, nav]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,22 +68,12 @@ export default function Login() {
     console.log('Submitting form with:', { username, isRegistering });
 
     try {
-      const result = isRegistering 
+      const success = isRegistering 
         ? await register(username, email, password)
         : await login(username, password);
 
-      if (result.success) {
-        toast({
-          title: "Success!",
-          description: result.message,
-        });
+      if (success) {
         nav('/');
-      } else {
-        toast({
-          title: "Error",
-          description: result.message,
-          variant: "destructive",
-        });
       }
     } catch (error) {
       console.error('Form submission error:', error);
@@ -97,7 +87,7 @@ export default function Login() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from './useAuth';
-import { useToast } from './use-toast';
+import { toast } from '@/hooks/use-toast';
 
-import { API_BASE_URL } from '@/config/api';
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  type: 'bronze' | 'silver' | 'gold';
+  unlockedAt: string;
+}
 
 export interface Undergarment {
   id: string;
@@ -16,72 +22,101 @@ export interface Undergarment {
   retired: boolean;
   retiredDate?: string;
   achievements: Achievement[];
+  userId: string;
 }
 
-export interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  type: string;
-  unlockedAt: string;
+interface UseUndergarmentsReturn {
+  undergarments: Undergarment[];
+  loading: boolean;
+  fetchUndergarments: () => Promise<void>;
+  addUndergarment: (undergarment: Omit<Undergarment, 'id' | 'washCount' | 'retired' | 'achievements' | 'userId'>) => Promise<void>;
+  washUndergarment: (id: string) => Promise<void>;
+  retireUndergarment: (id: string) => Promise<void>;
+  deleteUndergarment: (id: string) => Promise<void>;
 }
 
-export function useUndergarmentsBackend() {
-  const { user } = useAuth();
-  const { toast } = useToast();
+// Helper function to check and unlock achievements
+const checkAchievements = (undergarment: Undergarment): Achievement[] => {
+  const achievements: Achievement[] = [];
+  const now = new Date().toISOString();
+
+  // Fresh Prince - 10 washes
+  if (undergarment.washCount >= 10 && !undergarment.achievements.find(a => a.id === 'fresh-prince')) {
+    achievements.push({
+      id: 'fresh-prince',
+      name: 'Fresh Prince',
+      description: 'Washed 10 times - still looking royal!',
+      icon: '👑',
+      type: 'bronze',
+      unlockedAt: now,
+    });
+  }
+
+  // Clean Machine - 25 washes
+  if (undergarment.washCount >= 25 && !undergarment.achievements.find(a => a.id === 'clean-machine')) {
+    achievements.push({
+      id: 'clean-machine',
+      name: 'Clean Machine',
+      description: 'Reached 25 washes - squeaky clean champion!',
+      icon: '🧽',
+      type: 'silver',
+      unlockedAt: now,
+    });
+  }
+
+  // Wash Warrior - 50 washes
+  if (undergarment.washCount >= 50 && !undergarment.achievements.find(a => a.id === 'wash-warrior')) {
+    achievements.push({
+      id: 'wash-warrior',
+      name: 'Wash Warrior',
+      description: 'Survived 50 washes - legendary durability!',
+      icon: '⚔️',
+      type: 'gold',
+      unlockedAt: now,
+    });
+  }
+
+  return achievements;
+};
+
+export const useUndergarmentsBackend = (): UseUndergarmentsReturn => {
   const [undergarments, setUndergarments] = useState<Undergarment[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user's undergarments from backend when user logs in
-  useEffect(() => {
+  const getCurrentUserId = (): string | null => {
+    const user = localStorage.getItem('pantheon_user');
     if (user) {
-      fetchUndergarments();
-    } else {
-      setUndergarments([]);
-      setLoading(false);
+      const userData = JSON.parse(user);
+      return userData.id;
     }
-  }, [user]);
+    return null;
+  };
 
-  const fetchUndergarments = async () => {
-    if (!user) return;
-    
-    setLoading(true);
+  const fetchUndergarments = async (): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/undergarments/`, {
-        credentials: 'include'
-      });
+      setLoading(true);
       
-      if (response.ok) {
-        const data = await response.json();
-        // Transform backend data to match frontend format
-        const transformedData = data.map((item: any) => ({
-          id: item.id.toString(),
-          name: item.name,
-          color: item.color,
-          material: item.material,
-          customWashes: item.custom_washes,
-          accessories: item.accessories || [],
-          purchaseDate: item.purchase_date,
-          washCount: item.wash_count,
-          retired: item.retired,
-          retiredDate: item.retired_date,
-          achievements: item.achievements || []
-        }));
-        setUndergarments(transformedData);
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const userId = getCurrentUserId();
+      if (!userId) {
+        setUndergarments([]);
+        return;
+      }
+
+      const stored = localStorage.getItem(`pantheon_undergarments_${userId}`);
+      if (stored) {
+        const data = JSON.parse(stored);
+        setUndergarments(data);
       } else {
-        console.error('Failed to fetch undergarments');
-        toast({
-          title: "Error",
-          description: "Failed to load your undergarments",
-          variant: "destructive",
-        });
+        setUndergarments([]);
       }
     } catch (error) {
-      console.error('Failed to fetch undergarments:', error);
+      console.error('Error fetching undergarments:', error);
       toast({
         title: "Error",
-        description: "Failed to load your undergarments",
+        description: "Failed to fetch undergarments",
         variant: "destructive",
       });
     } finally {
@@ -89,65 +124,39 @@ export function useUndergarmentsBackend() {
     }
   };
 
-  const addUndergarment = async (undergarmentData: any) => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "Please log in to add undergarments",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const addUndergarment = async (undergarmentData: Omit<Undergarment, 'id' | 'washCount' | 'retired' | 'achievements' | 'userId'>): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/undergarments/create/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: undergarmentData.name,
-          color: undergarmentData.color,
-          material: undergarmentData.material,
-          custom_washes: undergarmentData.customWashes,
-          accessories: undergarmentData.accessories || [],
-          purchase_date: undergarmentData.purchaseDate,
-        }),
-      });
-
-      if (response.ok) {
-        const newUndergarment = await response.json();
-        // Transform and add to state
-        const transformedItem = {
-          id: newUndergarment.id.toString(),
-          name: newUndergarment.name,
-          color: newUndergarment.color,
-          material: newUndergarment.material,
-          customWashes: newUndergarment.custom_washes,
-          accessories: newUndergarment.accessories || [],
-          purchaseDate: newUndergarment.purchase_date,
-          washCount: newUndergarment.wash_count,
-          retired: newUndergarment.retired,
-          retiredDate: newUndergarment.retired_date,
-          achievements: newUndergarment.achievements || []
-        };
-        
-        setUndergarments(prev => [transformedItem, ...prev]);
-        toast({
-          title: "Success",
-          description: "Undergarment added successfully!",
-        });
-      } else {
-        const errorData = await response.json();
+      const userId = getCurrentUserId();
+      if (!userId) {
         toast({
           title: "Error",
-          description: errorData.message || "Failed to add undergarment",
+          description: "You must be logged in to add undergarments",
           variant: "destructive",
         });
+        return;
       }
+
+      const newUndergarment: Undergarment = {
+        ...undergarmentData,
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        washCount: 0,
+        retired: false,
+        achievements: [],
+        userId,
+      };
+
+      const updatedUndergarments = [...undergarments, newUndergarment];
+      setUndergarments(updatedUndergarments);
+
+      // Save to localStorage
+      localStorage.setItem(`pantheon_undergarments_${userId}`, JSON.stringify(updatedUndergarments));
+
+      toast({
+        title: "Success",
+        description: `${newUndergarment.name} has been added to your collection!`,
+      });
     } catch (error) {
-      console.error('Failed to add undergarment:', error);
+      console.error('Error adding undergarment:', error);
       toast({
         title: "Error",
         description: "Failed to add undergarment",
@@ -156,47 +165,41 @@ export function useUndergarmentsBackend() {
     }
   };
 
-  const washUndergarment = async (id: string) => {
-    if (!user) return;
-
+  const washUndergarment = async (id: string): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/undergarments/${id}/update/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ action: 'wash' }),
+      const userId = getCurrentUserId();
+      if (!userId) return;
+
+      const updatedUndergarments = undergarments.map(undergarment => {
+        if (undergarment.id === id) {
+          const newWashCount = undergarment.washCount + 1;
+          const newAchievements = [...undergarment.achievements, ...checkAchievements({ ...undergarment, washCount: newWashCount })];
+          
+          return {
+            ...undergarment,
+            washCount: newWashCount,
+            achievements: newAchievements,
+          };
+        }
+        return undergarment;
       });
 
-      if (response.ok) {
-        const updatedUndergarment = await response.json();
-        // Update the undergarment in state
-        setUndergarments(prev =>
-          prev.map(ug => 
-            ug.id === id 
-              ? {
-                  ...ug,
-                  washCount: updatedUndergarment.wash_count,
-                  achievements: updatedUndergarment.achievements || ug.achievements
-                }
-              : ug
-          )
-        );
-        toast({
-          title: "Washed!",
-          description: "Your undergarment is now clean!",
-        });
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to wash undergarment",
-          variant: "destructive",
-        });
+      setUndergarments(updatedUndergarments);
+      localStorage.setItem(`pantheon_undergarments_${userId}`, JSON.stringify(updatedUndergarments));
+
+      // Check for new achievements
+      const undergarment = updatedUndergarments.find(u => u.id === id);
+      if (undergarment) {
+        const newAchievements = checkAchievements(undergarment);
+        if (newAchievements.length > 0) {
+          toast({
+            title: "Achievement Unlocked!",
+            description: `${newAchievements[0].name}: ${newAchievements[0].description}`,
+          });
+        }
       }
     } catch (error) {
-      console.error('Failed to wash undergarment:', error);
+      console.error('Error washing undergarment:', error);
       toast({
         title: "Error",
         description: "Failed to wash undergarment",
@@ -205,47 +208,31 @@ export function useUndergarmentsBackend() {
     }
   };
 
-  const retireUndergarment = async (id: string) => {
-    if (!user) return;
-
+  const retireUndergarment = async (id: string): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/undergarments/${id}/update/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ action: 'retire' }),
+      const userId = getCurrentUserId();
+      if (!userId) return;
+
+      const updatedUndergarments = undergarments.map(undergarment => {
+        if (undergarment.id === id) {
+          return {
+            ...undergarment,
+            retired: true,
+            retiredDate: new Date().toISOString(),
+          };
+        }
+        return undergarment;
       });
 
-      if (response.ok) {
-        const updatedUndergarment = await response.json();
-        // Update the undergarment in state
-        setUndergarments(prev =>
-          prev.map(ug => 
-            ug.id === id 
-              ? {
-                  ...ug,
-                  retired: updatedUndergarment.retired,
-                  retiredDate: updatedUndergarment.retired_date
-                }
-              : ug
-          )
-        );
-        toast({
-          title: "Retired!",
-          description: "Your undergarment has been retired with honor!",
-        });
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to retire undergarment",
-          variant: "destructive",
-        });
-      }
+      setUndergarments(updatedUndergarments);
+      localStorage.setItem(`pantheon_undergarments_${userId}`, JSON.stringify(updatedUndergarments));
+
+      toast({
+        title: "Undergarment Retired",
+        description: "Your undergarment has been retired with honor!",
+      });
     } catch (error) {
-      console.error('Failed to retire undergarment:', error);
+      console.error('Error retiring undergarment:', error);
       toast({
         title: "Error",
         description: "Failed to retire undergarment",
@@ -254,31 +241,21 @@ export function useUndergarmentsBackend() {
     }
   };
 
-  const deleteUndergarment = async (id: string) => {
-    if (!user) return;
-
+  const deleteUndergarment = async (id: string): Promise<void> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/undergarments/${id}/delete/`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      const userId = getCurrentUserId();
+      if (!userId) return;
 
-      if (response.ok) {
-        setUndergarments(prev => prev.filter(ug => ug.id !== id));
-        toast({
-          title: "Deleted!",
-          description: "Undergarment has been removed",
-        });
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Error",
-          description: errorData.message || "Failed to delete undergarment",
-          variant: "destructive",
-        });
-      }
+      const updatedUndergarments = undergarments.filter(undergarment => undergarment.id !== id);
+      setUndergarments(updatedUndergarments);
+      localStorage.setItem(`pantheon_undergarments_${userId}`, JSON.stringify(updatedUndergarments));
+
+      toast({
+        title: "Undergarment Deleted",
+        description: "Undergarment has been removed from your collection",
+      });
     } catch (error) {
-      console.error('Failed to delete undergarment:', error);
+      console.error('Error deleting undergarment:', error);
       toast({
         title: "Error",
         description: "Failed to delete undergarment",
@@ -287,13 +264,18 @@ export function useUndergarmentsBackend() {
     }
   };
 
+  // Fetch undergarments on mount
+  useEffect(() => {
+    fetchUndergarments();
+  }, []);
+
   return {
-    underwear: undergarments,
+    undergarments,
+    loading,
+    fetchUndergarments,
     addUndergarment,
     washUndergarment,
     retireUndergarment,
     deleteUndergarment,
-    loading,
-    refreshData: fetchUndergarments,
   };
-} 
+}; 

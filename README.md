@@ -36,26 +36,19 @@ npm i
 npm run dev
 ```
 
-**Backend Setup (Django)**
+**Frontend-Only Setup**
 
-This project now includes a Django backend for authentication. To set it up:
+This project now works entirely in the browser with mock authentication and localStorage data storage. No backend setup required!
 
 ```sh
-# Step 1: Create and activate virtual environment (if not already done)
-python3 -m venv backend_env
-source backend_env/bin/activate  # On Windows: backend_env\Scripts\activate
+# Step 1: Navigate to the frontend directory
+cd frontend
 
-# Step 2: Install Django dependencies
-pip install django djangorestframework django-cors-headers
+# Step 2: Install dependencies
+npm install
 
-# Step 3: Run migrations
-python manage.py migrate
-
-# Step 4: Start the Django server
-python manage.py runserver 8000
-
-# Or use the provided script
-./start_backend.sh
+# Step 3: Start the development server
+npm run dev
 ```
 
 **Edit a file directly in GitHub**
@@ -83,27 +76,32 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-### Backend
-- Django
-- Django REST Framework
-- SQLite (development)
-- Session-based authentication
+### Data Storage
+- localStorage for user sessions and data persistence
+- Mock authentication system
+- User-specific data isolation
 
 ## How can I deploy this project?
 
 ### Option 1: Lovable Deployment
 Simply open [Lovable](https://lovable.dev/projects/26c23208-de2d-4481-ba7e-b92f077e868a) and click on Share -> Publish.
 
-### Option 2: Manual Deployment to Render
-For full control over your deployment, follow the detailed guide in [DEPLOYMENT.md](./DEPLOYMENT.md).
+### Option 2: Static Site Deployment
+Since this is now a frontend-only application, you can deploy it to any static hosting service:
 
-Quick steps:
-1. **Backend**: Deploy Django API as a Web Service on Render
-2. **Frontend**: Deploy React app as a Static Site on Render
-3. **Database**: Set up PostgreSQL database on Render
-4. **Environment**: Configure environment variables
+1. **Vercel**: Connect your GitHub repository and deploy
+2. **Netlify**: Drag and drop the `frontend/dist` folder
+3. **GitHub Pages**: Enable GitHub Pages in your repository settings
+4. **Firebase Hosting**: Use Firebase CLI to deploy
 
-See [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) for a quick checklist.
+### Local Development
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The application now works entirely in the browser with localStorage for data persistence.
 
 ## Can I connect a custom domain to my Lovable project?
 
