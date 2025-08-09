@@ -52,14 +52,14 @@ npm install
 For Software:
 
 # Screenshots (Add at least 3)
-(https://drive.google.com/uc?export=view&id=1YUDIQiJJpk30Zzd8W802OEGRcUfiDOPz)
+<img src="https://drive.google.com/uc?export=view&id=1YUDIQiJJpk30Zzd8W802OEGRcUfiDOPz">
 *Login for the epic journey of every undergarment.*
 
-(https://drive.google.com/uc?export=view&id=1vbqliSSKmRBKUZ9Y5HrO6V-IyyNqww4Y)
+<img src="https://drive.google.com/uc?export=view&id=1vbqliSSKmRBKUZ9Y5HrO6V-IyyNqww4Y">
 *Homepage showing the glorious Hall of Famous Undergarments with animated avatars.*
 
 
-(https://drive.google.com/uc?export=view&id=13mZAHZHdTMDvK43uZOD4wOvdeyc9JLgs)
+<img src="https://drive.google.com/uc?export=view&id=13mZAHZHdTMDvK43uZOD4wOvdeyc9JLgs">
 *Leaderboard displaying top washed and longest-serving undergarments.*
 
 # Diagrams
