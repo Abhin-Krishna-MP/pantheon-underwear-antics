@@ -1,11 +1,11 @@
 <img width="3188" height="1202" alt="frame (3)" src="https://github.com/user-attachments/assets/517ad8e9-ad22-457d-9538-a9e62d137cd7" />
 
 
-# [Project Name] 🎯
+# UNDERLIV 🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: [BIT FABLE]
 
 
 ### Team Members
@@ -52,14 +52,14 @@ npm install
 For Software:
 
 # Screenshots (Add at least 3)
-<img width="500" height="300" alt="frame (3)" src="https://drive.google.com/file/d/1YUDIQiJJpk30Zzd8W802OEGRcUfiDOPz/view?usp=drive_link" />
+(https://drive.google.com/uc?export=view&id=1YUDIQiJJpk30Zzd8W802OEGRcUfiDOPz)
 *Login for the epic journey of every undergarment.*
 
-<img width="500" height="300" alt="frame (3)" src="https://drive.google.com/file/d/1vbqliSSKmRBKUZ9Y5HrO6V-IyyNqww4Y/view?usp=drive_link" />
+(https://drive.google.com/uc?export=view&id=1vbqliSSKmRBKUZ9Y5HrO6V-IyyNqww4Y)
 *Homepage showing the glorious Hall of Famous Undergarments with animated avatars.*
 
 
-<img width="500" height="300" alt="frame (3)" src="https://drive.google.com/file/d/13mZAHZHdTMDvK43uZOD4wOvdeyc9JLgs/view?usp=drive_link" />
+(https://drive.google.com/uc?export=view&id=13mZAHZHdTMDvK43uZOD4wOvdeyc9JLgs)
 *Leaderboard displaying top washed and longest-serving undergarments.*
 
 # Diagrams
