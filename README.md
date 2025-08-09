@@ -75,8 +75,8 @@ Workflow: User registers underwear → logs washes  → leaderboard + lifespan u
 [Add any extra demo materials/links]
 
 ## Team Contributions
-- [Abhinav kp]: [Technical]
-- [Abhin Krishna MP]: [Technical]
+- Abhinav kp: Technical
+- Abhin Krishna MP: Technical
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
