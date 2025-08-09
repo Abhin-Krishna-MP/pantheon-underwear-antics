@@ -68,7 +68,7 @@ Workflow: User registers underwear → logs washes  → leaderboard + lifespan u
 
 ### Project Demo
 # Video
-[Add your demo video link here]
+[https://drive.google.com/file/d/1WJ7uX--biT02rnZMGe40QNnKSOUYFZna/view?usp=drive_link]
 *Shows app navigation, adding undergarments, washing counter updates, and leaderboard.*
 
 # Additional Demos
